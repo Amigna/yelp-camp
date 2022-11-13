@@ -4,6 +4,7 @@ import path from "path";
 import dotenv from "dotenv";
 import methodOverride from "method-override";
 import { fileURLToPath } from "node:url";
+import ejsMate from "ejs-mate";
 import Campground from "./models/campground.js";
 
 import connectDB from "./db/connect.js";
@@ -26,6 +27,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
