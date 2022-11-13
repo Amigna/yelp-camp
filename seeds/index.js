@@ -1,5 +1,4 @@
 // Run this file anytime changes are made to the data
-// import { connect, connection } from "mongoose";
 import pkg from "mongoose";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -10,16 +9,26 @@ import Campground from "../models/campground.js";
 import connectDB from "../db/connect.js";
 dotenv.config({ path: "../.env" });
 
-mongoose.connect(process.env.MONGO_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+// mongoose.connect(process.env.MONGO_URL, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
 
-const db = connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", () => {
-  console.log("Database connected");
-});
+// const db = connection;
+// db.on("error", console.error.bind(console, "connection error:"));
+// db.once("open", () => {
+//   console.log("Database connected");
+// });
+
+const start = async () => {
+  try {
+    await connectDB(process.env.MONGO_URL);
+    console.log("Database connected!");
+  } catch (error) {
+    console.log(error);
+  }
+};
+start();
 
 const sample = (array) => array[Math.floor(Math.random() * array.length)];
 
