@@ -8,9 +8,14 @@ import ejsMate from "ejs-mate";
 import { ExpressError } from "./utils/ExpressError.js";
 import session from "express-session";
 import flash from "connect-flash";
+import passport from "passport";
+import LocalStrategy from "passport-local";
 
-import campgrounds from "./routes/campgrounds.js";
-import reviews from "./routes/reviews.js";
+import userRoutes from "./routes/users.js";
+import campgroundRoutes from "./routes/campgrounds.js";
+import reviewRoutes from "./routes/reviews.js";
+
+import User from "./models/user.js";
 
 import connectDB from "./db/connect.js";
 
@@ -52,12 +57,24 @@ const sessionConfig = {
   },
 };
 
-app.use(session(sessionConfig));
+app.use(session(sessionConfig)); // must be before passport.session()
 app.use(flash());
 
-// will have access in templates automatically and won't have to pass through
+// In Express-based app, passport.initialize() middleware is required to initialize
+// Passport. If your app uses persistent login sessions, passport.session()
+// middleware must also be used
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+// will have access in all templates automatically and won't have to pass through
 // by putting this before route handlers
 app.use((req, res, next) => {
+  // console.log(req.session);
+  res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   next();
@@ -67,8 +84,9 @@ app.get("/", (req, res) => {
   res.render("home");
 });
 
-app.use("/campgrounds", campgrounds);
-app.use("/campgrounds/:id/reviews", reviews);
+app.use("/", userRoutes);
+app.use("/campgrounds", campgroundRoutes);
+app.use("/campgrounds/:id/reviews", reviewRoutes);
 
 app.all("*", (req, res, next) => {
   next(new ExpressError("Page Not Found", 404));
