@@ -39,7 +39,7 @@ const seedDB = async () => {
     const price = Math.floor(Math.random() * 20) + 10;
     const camp = new Campground({
       // Your User ID
-      // author: '6230f77af3664b3a1276d30c',
+      author: "637962aa68553ccedfa319c9",
       location: `${cities[random1000].city}, ${cities[random1000].state}`,
       title: `${sample(descriptors)} ${sample(places)}`,
       image: "https://source.unsplash.com/collection/483251",
